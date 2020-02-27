@@ -7,6 +7,21 @@ Gerar o pacote do [protocolo de eventos](https://github.com/GuiaBolso/events-pro
 
 # Como usar
 
+```
+
+import (
+    "github.com/guiabolso/events-protocol-go
+    guuid "github.com/google/uuid"
+)
+
+func ..() {
+    session := 
+
+}
+
+
+```
+
 # Licença
 
 [Apache 2.0](https://github.com/GuiaBolso/events-protocol-go/blob/master/LICENSE) em Guiabolso (r) 2020

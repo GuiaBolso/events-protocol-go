@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+
 	guuid "github.com/google/uuid"
 	events "github.com/guiabolso/events-protocol-go"
 )
@@ -14,7 +14,22 @@ func main() {
 	}
 	session := events.RetrieveEventSession(UUIDGenerator)
 
-	event := session.RegisterEvent("json:parseable:event", "1")
+	metadata := map[string]interface{}{
+		"criadoEm": "exemplo",
+	}
+	session.SetMetadata(metadata)
 
-	fmt.PrintLn(json.Marshal(event))
+	payload := map[string]interface{}{
+		"empresa": "guiabolso",
+		"missao":  "melhorar a vida do brasileiro e transformar o sistema financeiro",
+	}
+	eventTemplate := session.RegisterEvent("uuid:event", "1").WithPayload(payload)
+
+	event1 := eventTemplate.Prepare()
+
+	fmt.Print(event1)
+
+	event2 := eventTemplate.Prepare()
+
+	fmt.Print(event2)
 }
