@@ -7,16 +7,18 @@ Gerar o pacote do [protocolo de eventos](https://github.com/GuiaBolso/events-pro
 
 # Como usar
 
-```
+```go
 
 import (
-    "github.com/guiabolso/events-protocol-go
+    events "github.com/guiabolso/events-protocol-go
     guuid "github.com/google/uuid"
 )
 
-func ..() {
-    session := 
+func main() {
+    session := events.RetrieveEventSession(<UUIDGenerator>)
+    eventTemplate := session.RegisterEvent("uuid:event", "1").WithPayload(payload)
 
+    event := eventTemplate.Prepare()
 }
 
 
