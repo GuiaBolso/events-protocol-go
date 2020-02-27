@@ -23,6 +23,7 @@ type SessionIDGenerator func() string
 type EventSession struct {
 	Identity   map[string]interface{}
 	Metadata   map[string]interface{}
+	Auth       map[string]interface{}
 	SessionID  string
 	Events     map[string]interface{}
 	GenerateID SessionIDGenerator
@@ -37,19 +38,20 @@ type EventTemplate struct {
 	payload  map[string]interface{}
 	metadata map[string]interface{}
 	identity map[string]interface{}
+	auth     map[string]interface{}
 }
 
 // Event is the main package, applying Guiabolso's
 // events protocol
 type Event struct {
-	Name     string // Preciso de um validador de nome
-	Version  string
-	FlowID   string // Preciso de um gerador
-	ID       string // Preciso de um gerador
-	Payload  map[string]interface{}
-	Metadata map[string]interface{}
-	Identity map[string]interface{}
-	Auth     map[string]interface{}
+	Name     string                 `json:"name"` // Preciso de um validador de nome
+	Version  string                 `json:"version"`
+	FlowID   string                 `json:"flowId"`
+	ID       string                 `json:"id"`
+	Payload  map[string]interface{} `json:"payload"`
+	Metadata map[string]interface{} `json:"metadata"`
+	Identity map[string]interface{} `json:"identity"`
+	Auth     map[string]interface{} `json:"auth"`
 }
 
 var (
@@ -75,6 +77,9 @@ func RetrieveEventSession(sessionIDGenerator ...SessionIDGenerator) EventSession
 		eventSession = &EventSession{
 			SessionID:  generateID(),
 			GenerateID: generateID,
+			Auth:       make(map[string]interface{}),
+			Identity:   make(map[string]interface{}),
+			Metadata:   make(map[string]interface{}),
 		}
 		eventSession.Events = make(map[string]interface{})
 	})
@@ -85,6 +90,12 @@ func RetrieveEventSession(sessionIDGenerator ...SessionIDGenerator) EventSession
 // SetIdentity attachs identity to be used with given session
 func (session *EventSession) SetIdentity(identity map[string]interface{}) *EventSession {
 	session.Identity = identity
+	return session
+}
+
+// SetAuth attachs identity to be used with given session
+func (session *EventSession) SetAuth(auth map[string]interface{}) *EventSession {
+	session.Auth = auth
 	return session
 }
 
@@ -128,7 +139,8 @@ func (e *EventTemplate) Prepare() Event {
 		Version:  e.version,
 		Payload:  e.payload,
 		Identity: mergeMaps(e.session.Identity, e.identity),
-		Metadata: e.session.Metadata,
+		Metadata: mergeMaps(e.session.Metadata, e.metadata),
+		Auth:     mergeMaps(e.session.Auth, e.auth),
 	}
 	return event
 }
