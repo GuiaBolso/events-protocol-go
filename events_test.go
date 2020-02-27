@@ -21,10 +21,12 @@ func Test_Session(t *testing.T) {
 }
 
 func Test_Event(t *testing.T) {
+	mockIDGenerator := func() string { return "session-id" }
+	session := RetrieveEventSession(mockIDGenerator)
+
 	identity := map[string]interface{}{
 		"identity": "identity",
 	}
-	session := RetrieveEventSession(func() string { return "session-id" })
 	session.SetIdentity(identity)
 
 	metadata := map[string]interface{}{
@@ -41,7 +43,9 @@ func Test_Event(t *testing.T) {
 	payload := map[string]interface{}{
 		"payload": "payload",
 	}
-	concreteEvent := event.WithPayload(payload).Prepare()
+	event.WithPayload(payload)
+
+	concreteEvent := event.Prepare()
 
 	if concreteEvent.Identity["identity"] != identity["identity"] {
 		t.Error("Expecting template identity to be used in final event", concreteEvent)
