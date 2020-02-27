@@ -45,7 +45,7 @@ func Test_Event(t *testing.T) {
 	}
 	session.SetMetadata(metadata)
 
-	event := session.RegisterEvent(eventName, "1")
+	templateEvent := session.RegisterEvent(eventName, "1")
 
 	if len(session.Events) != 1 {
 		t.Error("Expecting event list to be 1", session)
@@ -54,34 +54,34 @@ func Test_Event(t *testing.T) {
 	payload := map[string]interface{}{
 		"payload": "payload",
 	}
-	event.WithPayload(payload)
+	templateEvent.WithPayload(payload)
 
-	concreteEvent1 := event.Prepare()
+	event1 := templateEvent.Prepare()
 
-	if concreteEvent1.Identity["identity"] != identity["identity"] {
-		t.Error("Expecting template identity to be used in final event", concreteEvent1)
+	if event1.Identity["identity"] != identity["identity"] {
+		t.Error("Expecting template identity to be used in final event", event1)
 	}
-	if concreteEvent1.Metadata["metadata"] != metadata["metadata"] {
-		t.Error("Expecting template metadata to be used in final event", concreteEvent1)
+	if event1.Metadata["metadata"] != metadata["metadata"] {
+		t.Error("Expecting template metadata to be used in final event", event1)
 	}
-	if concreteEvent1.Payload["payload"] != payload["payload"] {
-		t.Error("Expecting template payload to be used in final event", concreteEvent1)
-	}
-
-	if len(event.history) != 1 {
-		t.Error("Incorrect history length", event.history)
+	if event1.Payload["payload"] != payload["payload"] {
+		t.Error("Expecting template payload to be used in final event", event1)
 	}
 
-	concreteEvent2 := event.Prepare()
-
-	if concreteEvent1.ID != concreteEvent2.ID {
-		t.Error("Expecting multiple event with same session to have same ID", concreteEvent1.ID, concreteEvent2.ID)
-	}
-	if concreteEvent1.FlowID == concreteEvent2.FlowID {
-		t.Error("Expecting multiple event not have same FlowID", concreteEvent1.FlowID, concreteEvent2.FlowID)
+	if len(templateEvent.history) != 1 {
+		t.Error("Incorrect history length", templateEvent.history)
 	}
 
-	if len(event.history) != 2 {
-		t.Error("Incorrect history length", event.history)
+	event2 := templateEvent.Prepare()
+
+	if event1.ID != event2.ID {
+		t.Error("Expecting multiple event with same session to have same ID", event1.ID, event2.ID)
+	}
+	if event1.FlowID == event2.FlowID {
+		t.Error("Expecting multiple event not have same FlowID", event1.FlowID, event2.FlowID)
+	}
+
+	if len(templateEvent.history) != 2 {
+		t.Error("Incorrect history length", templateEvent.history)
 	}
 }
