@@ -25,12 +25,12 @@ func Test_Event(t *testing.T) {
 		"identity": "identity",
 	}
 	session := RetrieveEventSession(func() string { return "session-id" })
-	session.WithIdentity(identity)
+	session.SetIdentity(identity)
 
 	metadata := map[string]interface{}{
 		"metadata": "metadata",
 	}
-	session.WithMetadata(metadata)
+	session.SetMetadata(metadata)
 
 	event := session.RegisterEvent("event:name", "1")
 

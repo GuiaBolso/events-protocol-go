@@ -82,15 +82,15 @@ func RetrieveEventSession(sessionIDGenerator ...SessionIDGenerator) EventSession
 	return *eventSession
 }
 
-// WithIdentity attachs identity to be used with given session
-func (session *EventSession) WithIdentity(identity map[string]interface{}) *EventSession {
+// SetIdentity attachs identity to be used with given session
+func (session *EventSession) SetIdentity(identity map[string]interface{}) *EventSession {
 	session.Identity = identity
 	return session
 }
 
-// WithMetadata is used to attach a metadata into an registered
+// SetMetadata is used to attach a metadata into an registered
 // Event. This metadata will be reused until overrided
-func (session *EventSession) WithMetadata(metadata map[string]interface{}) *EventSession {
+func (session *EventSession) SetMetadata(metadata map[string]interface{}) *EventSession {
 	session.Metadata = metadata
 	return session
 }
