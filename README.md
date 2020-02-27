@@ -8,7 +8,6 @@ Gerar o pacote do [protocolo de eventos](https://github.com/GuiaBolso/events-pro
 # Como usar
 
 ```go
-
 import (
     events "github.com/guiabolso/events-protocol-go
     guuid "github.com/google/uuid"
@@ -20,8 +19,6 @@ func main() {
 
     event := eventTemplate.Prepare()
 }
-
-
 ```
 
 # Licença

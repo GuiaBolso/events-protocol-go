@@ -29,6 +29,7 @@ func Test_Session(t *testing.T) {
 }
 
 func Test_Event(t *testing.T) {
+	eventName := "event:name"
 	mockIDGenerator := func() string {
 		return fmt.Sprintf("%d", rand.Int())
 	}
@@ -44,7 +45,7 @@ func Test_Event(t *testing.T) {
 	}
 	session.SetMetadata(metadata)
 
-	event := session.RegisterEvent("event:name", "1")
+	event := session.RegisterEvent(eventName, "1")
 
 	if len(session.Events) != 1 {
 		t.Error("Expecting event list to be 1", session)
@@ -67,6 +68,10 @@ func Test_Event(t *testing.T) {
 		t.Error("Expecting template payload to be used in final event", concreteEvent1)
 	}
 
+	if len(event.history) != 1 {
+		t.Error("Incorrect history length", event.history)
+	}
+
 	concreteEvent2 := event.Prepare()
 
 	if concreteEvent1.ID != concreteEvent2.ID {
@@ -74,5 +79,9 @@ func Test_Event(t *testing.T) {
 	}
 	if concreteEvent1.FlowID == concreteEvent2.FlowID {
 		t.Error("Expecting multiple event not have same FlowID", concreteEvent1.FlowID, concreteEvent2.FlowID)
+	}
+
+	if len(event.history) != 2 {
+		t.Error("Incorrect history length", event.history)
 	}
 }

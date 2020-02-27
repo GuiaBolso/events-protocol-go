@@ -32,6 +32,7 @@ type EventSession struct {
 // EventTemplate is used to create a base template
 // to be easyly replicated
 type EventTemplate struct {
+	history  []Event
 	session  *EventSession
 	name     string // Preciso de um validador de nome
 	version  string
@@ -110,6 +111,7 @@ func (session *EventSession) SetMetadata(metadata map[string]interface{}) *Event
 // an registered event must be prepare to be puse
 func (session *EventSession) RegisterEvent(eventName string, version string) *EventTemplate {
 	event := &EventTemplate{
+		history: []Event{},
 		session: session,
 		name:    eventName,
 		version: version,
@@ -142,5 +144,6 @@ func (e *EventTemplate) Prepare() Event {
 		Metadata: mergeMaps(e.session.Metadata, e.metadata),
 		Auth:     mergeMaps(e.session.Auth, e.auth),
 	}
+	e.history = append(e.history, event)
 	return event
 }
