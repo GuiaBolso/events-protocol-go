@@ -1,7 +1,5 @@
 package events
 
-import "sync"
-
 func mergeMaps(mergeable ...map[string]interface{}) map[string]interface{} {
 	output := make(map[string]interface{})
 	for _, m := range mergeable {
@@ -54,35 +52,28 @@ type Event struct {
 	Auth     map[string]interface{} `json:"auth"`
 }
 
-var (
-	once         sync.Once
-	eventSession *EventSession
-)
+// GenerateEventSession generates an session
+func GenerateEventSession(sessionIDGenerator ...SessionIDGenerator) EventSession {
+	if len(sessionIDGenerator) == 0 {
+		panic("Without a sessionIDgenerator, Event is useless")
+	}
 
-// RetrieveEventSession retrieves an existing session or create a new one
-func RetrieveEventSession(sessionIDGenerator ...SessionIDGenerator) EventSession {
-	once.Do(func() {
-		if len(sessionIDGenerator) == 0 {
-			panic("Without a sessionIDgenerator, Event is useless")
+	generateID := func() string {
+		var sessionID string
+		for _, c := range sessionIDGenerator {
+			sessionID += c()
 		}
+		return sessionID
+	}
 
-		generateID := func() string {
-			var sessionID string
-			for _, c := range sessionIDGenerator {
-				sessionID += c()
-			}
-			return sessionID
-		}
-
-		eventSession = &EventSession{
-			SessionID:  generateID(),
-			GenerateID: generateID,
-			Auth:       make(map[string]interface{}),
-			Identity:   make(map[string]interface{}),
-			Metadata:   make(map[string]interface{}),
-		}
-		eventSession.Events = make(map[string]interface{})
-	})
+	eventSession := &EventSession{
+		SessionID:  generateID(),
+		GenerateID: generateID,
+		Auth:       make(map[string]interface{}),
+		Identity:   make(map[string]interface{}),
+		Metadata:   make(map[string]interface{}),
+	}
+	eventSession.Events = make(map[string]interface{})
 
 	return *eventSession
 }

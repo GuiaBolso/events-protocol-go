@@ -14,16 +14,16 @@ func Test_Session(t *testing.T) {
 		return fmt.Sprintf("%d", count)
 	}
 
-	session := RetrieveEventSession(basicGenerator)
+	session := GenerateEventSession(basicGenerator)
 
 	if session.SessionID != "1" {
 		t.Error("Expecting sessionId to be 1:", session.SessionID)
 	}
 
-	session2 := RetrieveEventSession()
+	session2 := GenerateEventSession(basicGenerator)
 
-	if session2.SessionID != session.SessionID {
-		t.Error("Expecting session to be a application singleton:", session2.SessionID, session.SessionID)
+	if session2.SessionID == session.SessionID {
+		t.Error("Expecting sessions to be different:", session2.SessionID, session.SessionID)
 	}
 	count = 0
 }
@@ -33,7 +33,7 @@ func Test_Event(t *testing.T) {
 	mockIDGenerator := func() string {
 		return fmt.Sprintf("%d", rand.Int())
 	}
-	session := RetrieveEventSession(mockIDGenerator)
+	session := GenerateEventSession(mockIDGenerator)
 
 	identity := map[string]interface{}{
 		"identity": "identity",
