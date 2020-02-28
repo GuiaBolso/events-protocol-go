@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-    session := events.RetrieveEventSession(<UUIDGenerator>)
+    session := events.GenerateEventSession(<UUIDGenerator>)
     eventTemplate := session.RegisterEvent("uuid:event", "1").WithPayload(payload)
 
     event := eventTemplate.Prepare()
