@@ -12,7 +12,7 @@ func main() {
 		uuid := guuid.New()
 		return uuid.String()
 	}
-	session := events.RetrieveEventSession(UUIDGenerator)
+	session := events.GenerateEventSession(UUIDGenerator)
 
 	metadata := map[string]interface{}{
 		"criadoEm": "exemplo",
