@@ -68,10 +68,6 @@ func Test_Event(t *testing.T) {
 		t.Error("Expecting template payload to be used in final event", event1)
 	}
 
-	if len(templateEvent.history) != 1 {
-		t.Error("Incorrect history length", templateEvent.history)
-	}
-
 	event2 := templateEvent.Prepare()
 
 	if event1.ID != event2.ID {
@@ -79,9 +75,5 @@ func Test_Event(t *testing.T) {
 	}
 	if event1.FlowID == event2.FlowID {
 		t.Error("Expecting multiple event not have same FlowID", event1.FlowID, event2.FlowID)
-	}
-
-	if len(templateEvent.history) != 2 {
-		t.Error("Incorrect history length", templateEvent.history)
 	}
 }
