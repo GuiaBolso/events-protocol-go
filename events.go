@@ -76,22 +76,10 @@ func FromJSON(eventJSON string) (Event, error) {
 }
 
 // GenerateEventSession generates an session
-func GenerateEventSession(sessionIDGenerator ...SessionIDGenerator) EventSession {
-	if len(sessionIDGenerator) == 0 {
-		panic("Without a sessionIDgenerator, Event is useless")
-	}
-
-	generateID := func() string {
-		var sessionID string
-		for _, c := range sessionIDGenerator {
-			sessionID += c()
-		}
-		return sessionID
-	}
-
+func GenerateEventSession(sessionIDGenerator SessionIDGenerator) EventSession {
 	eventSession := &EventSession{
-		SessionID:  generateID(),
-		GenerateID: generateID,
+		SessionID:  sessionIDGenerator(),
+		GenerateID: sessionIDGenerator,
 		Auth:       make(map[string]interface{}),
 		Identity:   make(map[string]interface{}),
 		Metadata:   make(map[string]interface{}),
@@ -99,6 +87,48 @@ func GenerateEventSession(sessionIDGenerator ...SessionIDGenerator) EventSession
 	eventSession.Events = make(map[string]interface{})
 
 	return *eventSession
+}
+
+// ImportJSONEventSession use an JSON event to generate
+// the ID and reuse maximum of its resources as flowID and
+// ID. Also registers an event with given JSON event name and version
+func ImportJSONEventSession(eventJSON string) (EventSession, error) {
+	var event Event
+	var session EventSession
+	err := json.Unmarshal([]byte(eventJSON), &event)
+
+	if err != nil {
+		return session, err
+	}
+
+	session, err = ImportEventSession(event)
+	return session, err
+}
+
+// ImportEventSession use an event to generate
+// the ID and reuse maximum of its resources as flowID and
+// ID. Also registers an event with given event name and version
+func ImportEventSession(event Event) (EventSession, error) {
+	var session EventSession
+
+	flowIDGenertor := func() string {
+		return event.FlowID
+	}
+
+	session = EventSession{
+		SessionID:  event.ID,
+		GenerateID: flowIDGenertor,
+		Auth:       event.Auth,
+		Identity:   event.Identity,
+		Metadata:   event.Metadata,
+	}
+
+	session.Events = make(map[string]interface{})
+
+	registeredEvent := session.RegisterEvent(event.Name, event.Version)
+	registeredEvent.WithPayload(event.Payload)
+
+	return session, nil
 }
 
 // SetIdentity attachs identity to be used with given session

@@ -109,3 +109,35 @@ func Test_Event_JSON(t *testing.T) {
 		t.Error("wrongly imported event", fromJSON)
 	}
 }
+
+func Test_Event_Import(t *testing.T) {
+	event := Event{
+		Name:    "event:name",
+		Version: "1",
+		FlowID:  "teste-de-id",
+		ID:      "teste-de-id",
+	}
+
+	session, err := ImportEventSession(event)
+
+	if err != nil {
+		t.Error("Expecting ImportEventSession err to be nil", err)
+	}
+
+	if session.SessionID != "teste-de-id" {
+		t.Error("Expecting ID to be imported from event", session.SessionID, "teste-de-id")
+	}
+}
+func Test_Event_Import_From_JSON(t *testing.T) {
+	eventJSONBase := "{\"name\":\"event:name\",\"version\":\"1\",\"flowId\":\"teste-de-id\",\"id\":\"teste-de-id\",\"payload\":null,\"metadata\":{},\"identity\":{},\"auth\":{}}"
+
+	session, err := ImportJSONEventSession(eventJSONBase)
+
+	if err != nil {
+		t.Error("Expecting ImportJSONEventSession err to be nil", err)
+	}
+
+	if session.SessionID != "teste-de-id" {
+		t.Error("Expecting ID to be imported from eventJSONBase", session.SessionID, "teste-de-id")
+	}
+}
