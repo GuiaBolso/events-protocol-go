@@ -17,6 +17,8 @@ func main() {
 	// session := events.RetrieveEventSession(IDGenerator)
 	// session.Import(event)
 
+	event := events.FromJSON(eventJSON)
+
 	var event events.Event
 	_ = json.Unmarshal([]byte(eventJSON), &event)
 

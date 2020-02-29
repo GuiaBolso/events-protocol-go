@@ -1,5 +1,9 @@
 package events
 
+import (
+	"encoding/json"
+)
+
 func mergeMaps(mergeable ...map[string]interface{}) map[string]interface{} {
 	output := make(map[string]interface{})
 	for _, m := range mergeable {
@@ -50,6 +54,25 @@ type Event struct {
 	Metadata map[string]interface{} `json:"metadata"`
 	Identity map[string]interface{} `json:"identity"`
 	Auth     map[string]interface{} `json:"auth"`
+}
+
+// ToJSON directly converts event into a JSON package
+func (e Event) ToJSON() (string, error) {
+	eventJSON, err := json.Marshal(e)
+	if err != nil {
+		return "", err
+	}
+	eventJSONString := string(eventJSON)
+	return eventJSONString, nil
+}
+
+// FromJSON directly converts JSON package into an Event
+// Use it only if you just want the Event object
+// If you want to handle the event, use ImportEventSession instead
+func FromJSON(eventJSON string) (Event, error) {
+	var event Event
+	err := json.Unmarshal([]byte(eventJSON), &event)
+	return event, err
 }
 
 // GenerateEventSession generates an session

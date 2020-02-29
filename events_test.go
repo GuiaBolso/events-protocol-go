@@ -77,3 +77,35 @@ func Test_Event(t *testing.T) {
 		t.Error("Expecting multiple event not have same FlowID", event1.FlowID, event2.FlowID)
 	}
 }
+
+func Test_Event_JSON(t *testing.T) {
+	eventName := "event:name"
+	mockIDGenerator := func() string {
+		return "teste-de-id"
+	}
+	session := GenerateEventSession(mockIDGenerator)
+
+	templateEvent := session.RegisterEvent(eventName, "1")
+
+	event := templateEvent.Prepare()
+	eventJSON, err := event.ToJSON()
+
+	if err != nil {
+		t.Error("Expecting ToJSON err to be nil", err)
+	}
+
+	eventJSONExpected := "{\"name\":\"event:name\",\"version\":\"1\",\"flowId\":\"teste-de-id\",\"id\":\"teste-de-id\",\"payload\":null,\"metadata\":{},\"identity\":{},\"auth\":{}}"
+
+	if eventJSON != eventJSONExpected {
+		t.Error("Expecting event json to be compliant with json signature", eventJSON, eventJSONExpected)
+	}
+
+	fromJSON, err := FromJSON(eventJSON)
+	if err != nil {
+		t.Error("Expecting FromJSON err to be nil", err)
+	}
+
+	if fromJSON.ID != event.ID {
+		t.Error("wrongly imported event", fromJSON)
+	}
+}
